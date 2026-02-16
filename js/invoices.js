@@ -9,6 +9,10 @@ function loadInvoices() {
     // تطبيق تصفية العملة
     const invoices = filterInvoicesByCurrency(allInvoices);
     
+    // الحصول على العملة المختارة
+    const selectedCurrency = getGlobalCurrencyFilter();
+    const currencyForDisplay = (selectedCurrency === 'all') ? null : selectedCurrency;
+    
     content.innerHTML = `
         <div class="card">
             <div class="card-header">
@@ -69,7 +73,7 @@ function loadInvoices() {
                         </div>
                         <div class="stat-content">
                             <h3>الإجمالي</h3>
-                            <div class="stat-value">${formatCurrency(invoices.reduce((sum, inv) => sum + inv.total, 0))}</div>
+                            <div class="stat-value">${formatCurrency(invoices.reduce((sum, inv) => sum + inv.total, 0), currencyForDisplay)}</div>
                         </div>
                     </div>
                 </div>

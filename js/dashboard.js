@@ -276,7 +276,7 @@ function renderRecentBookings() {
                             <td>${booking.booking_number}</td>
                             <td>${customer ? customer.name : 'غير محدد'}</td>
                             <td>${getBookingTypeLabel(booking.type)}</td>
-                            <td>${formatCurrency(booking.amount)}</td>
+                            <td>${formatCurrency(booking.amount, booking.currency)}</td>
                             <td>
                                 <span class="badge badge-${statusColors[booking.status]}" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; background: var(--${statusColors[booking.status]}-color); color: white;">
                                     ${statusLabels[booking.status]}
@@ -337,7 +337,7 @@ function renderRecentInvoices() {
                             <td>${invoice.number}</td>
                             <td>${party ? party.name : 'غير محدد'}</td>
                             <td>${invoice.type === 'sales' ? 'مبيعات' : 'مشتريات'}</td>
-                            <td>${formatCurrency(invoice.total)}</td>
+                            <td>${formatCurrency(invoice.total, invoice.currency)}</td>
                             <td>
                                 <span class="badge badge-${statusColors[invoice.status]}" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; background: var(--${statusColors[invoice.status]}-color); color: white;">
                                     ${statusLabels[invoice.status]}

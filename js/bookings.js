@@ -14,6 +14,10 @@ function loadBookings() {
     const umrah = bookings.filter(b => b.type === 'umrah');
     const hotel = bookings.filter(b => b.type === 'hotel');
     
+    // الحصول على العملة المختارة
+    const selectedCurrency = getGlobalCurrencyFilter();
+    const currencyForDisplay = (selectedCurrency === 'all') ? null : selectedCurrency;
+    
     content.innerHTML = `
         <div class="card">
             <div class="card-header">
@@ -62,7 +66,7 @@ function loadBookings() {
                         <div class="stat-content">
                             <h3>حجوزات الطيران</h3>
                             <div class="stat-value">${flight.length}</div>
-                            <small>${formatCurrency(flight.reduce((sum, b) => sum + b.amount, 0))}</small>
+                            <small>${formatCurrency(flight.reduce((sum, b) => sum + b.amount, 0), currencyForDisplay)}</small>
                         </div>
                     </div>
                     
@@ -73,7 +77,7 @@ function loadBookings() {
                         <div class="stat-content">
                             <h3>حجوزات الحج</h3>
                             <div class="stat-value">${hajj.length}</div>
-                            <small>${formatCurrency(hajj.reduce((sum, b) => sum + b.amount, 0))}</small>
+                            <small>${formatCurrency(hajj.reduce((sum, b) => sum + b.amount, 0), currencyForDisplay)}</small>
                         </div>
                     </div>
                     
@@ -84,7 +88,7 @@ function loadBookings() {
                         <div class="stat-content">
                             <h3>حجوزات العمرة</h3>
                             <div class="stat-value">${umrah.length}</div>
-                            <small>${formatCurrency(umrah.reduce((sum, b) => sum + b.amount, 0))}</small>
+                            <small>${formatCurrency(umrah.reduce((sum, b) => sum + b.amount, 0), currencyForDisplay)}</small>
                         </div>
                     </div>
                     
@@ -95,7 +99,7 @@ function loadBookings() {
                         <div class="stat-content">
                             <h3>حجوزات الفنادق</h3>
                             <div class="stat-value">${hotel.length}</div>
-                            <small>${formatCurrency(hotel.reduce((sum, b) => sum + b.amount, 0))}</small>
+                            <small>${formatCurrency(hotel.reduce((sum, b) => sum + b.amount, 0), currencyForDisplay)}</small>
                         </div>
                     </div>
                 </div>

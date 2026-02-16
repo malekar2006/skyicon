@@ -92,7 +92,8 @@ function formatCurrency(amount, currency = null) {
     // الحصول على معلومات العملة
     const currencyInfo = currency ? CURRENCIES[currency] : null;
     
-    const formatted = new Intl.NumberFormat('ar-YE', {
+    const formatted = new Intl.NumberFormat('en-US', {
+        useGrouping: false,
         minimumFractionDigits: currencyInfo ? currencyInfo.decimals : 2,
         maximumFractionDigits: currencyInfo ? currencyInfo.decimals : 2
     }).format(amount || 0);

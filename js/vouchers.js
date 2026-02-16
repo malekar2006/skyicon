@@ -12,6 +12,10 @@ function loadVouchers() {
     const receipts = vouchers.filter(v => v.type === 'receipt');
     const payments = vouchers.filter(v => v.type === 'payment');
     
+    // الحصول على العملة المختارة
+    const selectedCurrency = getGlobalCurrencyFilter();
+    const currencyForDisplay = (selectedCurrency === 'all') ? null : selectedCurrency;
+    
     content.innerHTML = `
         <div class="card">
             <div class="card-header">
@@ -43,7 +47,7 @@ function loadVouchers() {
                         <div class="stat-content">
                             <h3>سندات القبض</h3>
                             <div class="stat-value">${receipts.length}</div>
-                            <small>${formatCurrency(receipts.reduce((sum, v) => sum + v.amount, 0))}</small>
+                            <small>${formatCurrency(receipts.reduce((sum, v) => sum + v.amount, 0), currencyForDisplay)}</small>
                         </div>
                     </div>
                     
@@ -54,7 +58,7 @@ function loadVouchers() {
                         <div class="stat-content">
                             <h3>سندات الصرف</h3>
                             <div class="stat-value">${payments.length}</div>
-                            <small>${formatCurrency(payments.reduce((sum, v) => sum + v.amount, 0))}</small>
+                            <small>${formatCurrency(payments.reduce((sum, v) => sum + v.amount, 0), currencyForDisplay)}</small>
                         </div>
                     </div>
                     
@@ -66,7 +70,8 @@ function loadVouchers() {
                             <h3>صافي التدفق النقدي</h3>
                             <div class="stat-value">${formatCurrency(
                                 receipts.reduce((sum, v) => sum + v.amount, 0) - 
-                                payments.reduce((sum, v) => sum + v.amount, 0)
+                                payments.reduce((sum, v) => sum + v.amount, 0),
+                                currencyForDisplay
                             )}</div>
                         </div>
                     </div>
@@ -78,6 +83,10 @@ function loadVouchers() {
                         <div class="stat-content">
                             <h3>إجمالي السندات</h3>
                             <div class="stat-value">${vouchers.length}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
                         </div>
                     </div>
                 </div>
@@ -433,11 +442,33 @@ function viewVoucher(voucherId) {
                 </button>
             </div>
             
-            <div class="company-header">
-                <div class="company-logo"><i class="fas fa-plane-departure"></i></div>
-                <h2 class="company-name">${COMPANY_INFO.name}</h2>
-                <p class="company-subtitle">${COMPANY_INFO.location}</p>
-                <h3 style="margin-top: 20px; color: ${voucher.type === 'receipt' ? 'var(--success-color)' : 'var(--danger-color)'};">
+            <div class="company-header" style="display: flex; justify-content: space-between; align-items: center; padding: 30px 40px; border-bottom: 3px solid var(--primary-color); background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);">
+                <!-- النص العربي (يمين) -->
+                <div style="flex: 1; text-align: right;">
+                    <h2 class="company-name" style="margin: 0; font-size: 22px; color: var(--primary-color); font-weight: 700;">${COMPANY_INFO.name}</h2>
+                    <p class="company-subtitle" style="margin: 5px 0 0 0; font-size: 14px; color: #6b7280;">${COMPANY_INFO.location}</p>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280; direction: ltr; text-align: right;">
+                        ${COMPANY_INFO.phones.office.join(' - ')}
+                    </p>
+                </div>
+                
+                <!-- الشعار (وسط) -->
+                <div style="flex: 0 0 auto; padding: 0 30px;">
+                    <img src="${COMPANY_INFO.logo}" alt="سكاي آيكون" style="max-width: 120px; max-height: 90px; object-fit: contain;">
+                </div>
+                
+                <!-- النص الإنجليزي (يسار) -->
+                <div style="flex: 1; text-align: left; direction: ltr;">
+                    <h2 style="margin: 0; font-size: 20px; color: var(--primary-color); font-weight: 700;">Sky Icon Travel & Tourism</h2>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: #6b7280;">Sana'a - Dhahban</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #6b7280;">
+                        ${COMPANY_INFO.phones.office.join(' - ')}
+                    </p>
+                </div>
+            </div>
+            
+            <div style="padding: 20px 40px; background: ${voucher.type === 'receipt' ? 'var(--success-color)' : 'var(--danger-color)'}; color: white;">
+                <h3 style="margin: 0; text-align: center; font-size: 24px; font-weight: 700;">
                     ${voucher.type === 'receipt' ? 'سند قبض' : 'سند صرف'}
                 </h3>
             </div>

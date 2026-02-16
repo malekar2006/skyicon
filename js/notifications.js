@@ -360,7 +360,8 @@ function notifyNewVoucher(voucherType, voucherNo, amount) {
 
 // تنسيق المبالغ المالية
 function formatCurrency(amount, currency = 'YER') {
-    const formatted = new Intl.NumberFormat('ar-YE', {
+    const formatted = new Intl.NumberFormat('en-US', {
+        useGrouping: false,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount);

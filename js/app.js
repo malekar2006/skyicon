@@ -40,6 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // تهيئة القائمة الجانبية
     initSidebar();
     
+    // تهيئة الملف الشخصي
+    if (typeof initProfile === 'function') {
+        initProfile();
+    }
+    
     // تحميل الصفحة الافتراضية
     loadPage('dashboard');
     
@@ -97,6 +102,10 @@ function handleAction(action) {
         'search': 'الاستعلام المتقدم',
         'currency': 'إدارة العملات',
         'service-pricing': 'تسعير الخدمات',
+        'customer-statements': 'كشف حساب عميل',
+        'supplier-statements': 'كشف حساب مورد',
+        'all-customers-statements': 'كشف حساب جميع العملاء',
+        'all-suppliers-statements': 'كشف حساب جميع الموردين',
         'profile': 'الملف الشخصي',
         'notifications': 'الإشعارات',
         'followup': 'المتابعة'
@@ -122,6 +131,18 @@ function handleAction(action) {
             break;
         case 'service-pricing':
             loadServicePricing();
+            break;
+        case 'customer-statements':
+            loadCustomerStatements();
+            break;
+        case 'supplier-statements':
+            loadSupplierStatements();
+            break;
+        case 'all-customers-statements':
+            loadAllCustomersStatements();
+            break;
+        case 'all-suppliers-statements':
+            loadAllSuppliersStatements();
             break;
         case 'profile':
             showProfile();
@@ -380,9 +401,14 @@ function findItem(key, id) {
 // دوال مساعدة - التنسيق
 // ========================================
 
-// تنسيق الأرقام
+// تنسيق الأرقام (أرقام إنجليزية)
 function formatNumber(num) {
-    return new Intl.NumberFormat('ar-YE').format(num);
+    // استخدام en-US للحصول على أرقام إنجليزية (123456)
+    return new Intl.NumberFormat('en-US', {
+        useGrouping: false, // إزالة الفواصل
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(num);
 }
 
 // تنسيق العملة (بدون رمز - حسب المتطلبات الجديدة)
@@ -390,7 +416,33 @@ function formatCurrency(amount, currency = null) {
     // تنسيق الرقم
     const formatted = formatNumber(amount);
     
-    // إذا تم تمرير عملة، نعرض رمزها
+    // إذا لم يتم تحديد عملة، نحاول الحصول عليها بالترتيب:
+    // 1. العملة المصفاة من نظام التصفية
+    // 2. العملة الافتراضية من الإعدادات
+    if (!currency) {
+        // محاولة الحصول على العملة المصفاة
+        if (typeof getGlobalCurrencyFilter === 'function') {
+            const filter = getGlobalCurrencyFilter();
+            if (filter && filter !== 'all' && CURRENCIES[filter]) {
+                currency = filter;
+            }
+        }
+        
+        // إذا لم توجد عملة مصفاة، استخدم العملة الافتراضية من الإعدادات
+        if (!currency && typeof getDefaultCurrency === 'function') {
+            const defaultCurr = getDefaultCurrency();
+            if (defaultCurr && defaultCurr !== 'all' && CURRENCIES[defaultCurr]) {
+                currency = defaultCurr;
+            }
+        }
+        
+        // كحل أخير، استخدم الريال اليمني
+        if (!currency) {
+            currency = 'YER';
+        }
+    }
+    
+    // إذا تم تحديد عملة، نعرض رمزها
     if (currency && CURRENCIES[currency]) {
         return `${formatted} ${CURRENCIES[currency].symbol}`;
     }
@@ -414,9 +466,10 @@ function convertFromBaseCurrency(amount, toCurrency) {
 }
 
 // الحصول على قائمة العملات (بدون رموز - حسب المتطلبات الجديدة)
-function getCurrencyOptions() {
+function getCurrencyOptions(selectedCurrency = null) {
+    const defaultCurr = selectedCurrency || (typeof getDefaultCurrency === 'function' ? getDefaultCurrency() : 'YER');
     return Object.values(CURRENCIES).map(curr => 
-        `<option value="${curr.code}">${curr.name}</option>`
+        `<option value="${curr.code}" ${curr.code === defaultCurr ? 'selected' : ''}>${curr.name}</option>`
     ).join('');
 }
 
@@ -434,6 +487,18 @@ function formatDate(date) {
 function formatDateShort(date) {
     const d = new Date(date);
     return d.toLocaleDateString('ar-YE');
+}
+
+// تنسيق التاريخ والوقت
+function formatDateTime(dateTime) {
+    const d = new Date(dateTime);
+    return d.toLocaleString('ar-YE', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 // ========================================

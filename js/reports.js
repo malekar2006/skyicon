@@ -48,6 +48,39 @@ function loadReports() {
                             <p style="color: var(--text-light);">حركة النقد</p>
                         </div>
                     </div>
+                    
+                    <!-- كشوفات الحسابات -->
+                    <div class="card" style="cursor: pointer; background: linear-gradient(135deg, #004d40 0%, #00695c 100%);" onclick="handleAction('customer-statements')">
+                        <div style="padding: 20px; text-align: center;">
+                            <i class="fas fa-user-check" style="font-size: 48px; color: white;"></i>
+                            <h4 style="margin-top: 15px; color: white;">كشف حساب عميل</h4>
+                            <p style="color: #b2dfdb;">حساب عميل محدد</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="cursor: pointer; background: linear-gradient(135deg, #004d40 0%, #00695c 100%);" onclick="handleAction('all-customers-statements')">
+                        <div style="padding: 20px; text-align: center;">
+                            <i class="fas fa-users" style="font-size: 48px; color: white;"></i>
+                            <h4 style="margin-top: 15px; color: white;">كشف حساب جميع العملاء</h4>
+                            <p style="color: #b2dfdb;">جميع العملاء</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="cursor: pointer; background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);" onclick="handleAction('supplier-statements')">
+                        <div style="padding: 20px; text-align: center;">
+                            <i class="fas fa-truck" style="font-size: 48px; color: white;"></i>
+                            <h4 style="margin-top: 15px; color: white;">كشف حساب مورد</h4>
+                            <p style="color: #ffcdd2;">حساب مورد محدد</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="cursor: pointer; background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);" onclick="handleAction('all-suppliers-statements')">
+                        <div style="padding: 20px; text-align: center;">
+                            <i class="fas fa-truck-loading" style="font-size: 48px; color: white;"></i>
+                            <h4 style="margin-top: 15px; color: white;">كشف حساب جميع الموردين</h4>
+                            <p style="color: #ffcdd2;">جميع الموردين</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,6 +89,7 @@ function loadReports() {
 
 function generateIncomeStatement() {
     const filter = getGlobalCurrencyFilter();
+    const displayCurrency = (filter === 'all') ? null : filter;
     
     // استخدام الدوال المصفاة إذا كان هناك تصفية نشطة
     const totalRevenue = (filter === 'all') ? getTotalRevenue() : getTotalRevenueFiltered();
@@ -103,7 +137,7 @@ function generateIncomeStatement() {
                         </tr>
                         <tr>
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;إجمالي الإيرادات</td>
-                            <td style="text-align: left;">${formatCurrency(totalRevenue)}</td>
+                            <td style="text-align: left;">${formatCurrency(totalRevenue, displayCurrency)}</td>
                         </tr>
                         <tr style="background: var(--light-bg); font-weight: bold;">
                             <td>المصروفات</td>
@@ -111,12 +145,12 @@ function generateIncomeStatement() {
                         </tr>
                         <tr>
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;إجمالي المصروفات</td>
-                            <td style="text-align: left;">${formatCurrency(totalExpenses)}</td>
+                            <td style="text-align: left;">${formatCurrency(totalExpenses, displayCurrency)}</td>
                         </tr>
                         <tr style="background: ${netProfit >= 0 ? '#e8f5e9' : '#ffebee'}; font-weight: bold; font-size: 18px;">
                             <td>${netProfit >= 0 ? 'صافي الربح' : 'صافي الخسارة'}</td>
                             <td style="text-align: left; color: ${netProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">
-                                ${formatCurrency(Math.abs(netProfit))}
+                                ${formatCurrency(Math.abs(netProfit), displayCurrency)}
                             </td>
                         </tr>
                     </tbody>
@@ -131,6 +165,7 @@ function generateIncomeStatement() {
 function generateBalanceSheet() {
     const accounts = getData('accounts') || [];
     const filter = getGlobalCurrencyFilter();
+    const displayCurrency = (filter === 'all') ? null : filter;
     
     // حساب الأصول
     const assetAccounts = accounts.filter(acc => acc.code.startsWith('1') && acc.type === 'detail');
@@ -198,7 +233,7 @@ function generateBalanceSheet() {
                                     return `
                                         <tr>
                                             <td style="padding-right: 20px;">${acc.name}</td>
-                                            <td style="text-align: left;">${formatCurrency(balance)}</td>
+                                            <td style="text-align: left;">${formatCurrency(balance, displayCurrency)}</td>
                                         </tr>
                                     `;
                                 }).join('')}
@@ -206,7 +241,8 @@ function generateBalanceSheet() {
                                     <td>إجمالي الأصول المتداولة</td>
                                     <td style="text-align: left;">${formatCurrency(
                                         assetAccounts.filter(acc => acc.code.startsWith('11'))
-                                            .reduce((sum, acc) => sum + getAccountBalance(acc.id), 0)
+                                            .reduce((sum, acc) => sum + getAccountBalance(acc.id), 0),
+                                        displayCurrency
                                     )}</td>
                                 </tr>
                             </tbody>
@@ -221,7 +257,7 @@ function generateBalanceSheet() {
                                         return `
                                             <tr>
                                                 <td style="padding-right: 20px;">${acc.name}</td>
-                                                <td style="text-align: left;">${formatCurrency(balance)}</td>
+                                                <td style="text-align: left;">${formatCurrency(balance, displayCurrency)}</td>
                                             </tr>
                                         `;
                                     }).join('')}
@@ -229,7 +265,8 @@ function generateBalanceSheet() {
                                         <td>إجمالي الأصول الثابتة</td>
                                         <td style="text-align: left;">${formatCurrency(
                                             assetAccounts.filter(acc => acc.code.startsWith('12'))
-                                                .reduce((sum, acc) => sum + getAccountBalance(acc.id), 0)
+                                                .reduce((sum, acc) => sum + getAccountBalance(acc.id), 0),
+                                            displayCurrency
                                         )}</td>
                                     </tr>
                                 </tbody>
@@ -239,7 +276,7 @@ function generateBalanceSheet() {
                         <div style="background: var(--primary-color); color: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <strong style="font-size: 20px;">إجمالي الأصول</strong>
-                                <strong style="font-size: 24px;">${formatCurrency(totalAssets)}</strong>
+                                <strong style="font-size: 24px;">${formatCurrency(totalAssets, displayCurrency)}</strong>
                             </div>
                         </div>
                     </div>
@@ -258,14 +295,14 @@ function generateBalanceSheet() {
                                     return `
                                         <tr>
                                             <td style="padding-right: 20px;">${acc.name}</td>
-                                            <td style="text-align: left;">${formatCurrency(balance)}</td>
+                                            <td style="text-align: left;">${formatCurrency(balance, displayCurrency)}</td>
                                         </tr>
                                     `;
                                 }).join('')}
                                 ${liabilityAccounts.length === 0 ? '<tr><td colspan="2" style="text-align: center; color: #999;">لا توجد خصوم</td></tr>' : ''}
                                 <tr style="background: var(--light-bg); font-weight: bold;">
                                     <td>إجمالي الخصوم</td>
-                                    <td style="text-align: left;">${formatCurrency(totalLiabilities)}</td>
+                                    <td style="text-align: left;">${formatCurrency(totalLiabilities, displayCurrency)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -278,19 +315,19 @@ function generateBalanceSheet() {
                                     return `
                                         <tr>
                                             <td style="padding-right: 20px;">${acc.name}</td>
-                                            <td style="text-align: left;">${formatCurrency(balance)}</td>
+                                            <td style="text-align: left;">${formatCurrency(balance, displayCurrency)}</td>
                                         </tr>
                                     `;
                                 }).join('')}
                                 <tr>
                                     <td style="padding-right: 20px;">صافي الربح/الخسارة</td>
                                     <td style="text-align: left; color: ${netProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">
-                                        ${formatCurrency(Math.abs(netProfit))}
+                                        ${formatCurrency(Math.abs(netProfit), displayCurrency)}
                                     </td>
                                 </tr>
                                 <tr style="background: var(--light-bg); font-weight: bold;">
                                     <td>إجمالي حقوق الملكية</td>
-                                    <td style="text-align: left;">${formatCurrency(totalEquity)}</td>
+                                    <td style="text-align: left;">${formatCurrency(totalEquity, displayCurrency)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -298,7 +335,7 @@ function generateBalanceSheet() {
                         <div style="background: var(--success-color); color: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <strong style="font-size: 20px;">إجمالي الخصوم وحقوق الملكية</strong>
-                                <strong style="font-size: 24px;">${formatCurrency(totalLiabilitiesAndEquity)}</strong>
+                                <strong style="font-size: 24px;">${formatCurrency(totalLiabilitiesAndEquity, displayCurrency)}</strong>
                             </div>
                         </div>
                     </div>
@@ -308,11 +345,11 @@ function generateBalanceSheet() {
                 <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, var(--info-color) 0%, #64b5f6 100%); color: white; border-radius: 10px; text-align: center;">
                     <h3 style="margin-bottom: 20px;">المعادلة المحاسبية</h3>
                     <div style="font-size: 24px; font-weight: bold;">
-                        الأصول (${formatCurrency(totalAssets)})
+                        الأصول (${formatCurrency(totalAssets, displayCurrency)})
                         = 
-                        الخصوم (${formatCurrency(totalLiabilities)})
+                        الخصوم (${formatCurrency(totalLiabilities, displayCurrency)})
                         + 
-                        حقوق الملكية (${formatCurrency(totalEquity)})
+                        حقوق الملكية (${formatCurrency(totalEquity, displayCurrency)})
                     </div>
                     ${Math.abs(totalAssets - totalLiabilitiesAndEquity) < 0.01 ? 
                         '<p style="margin-top: 15px; font-size: 18px;"><i class="fas fa-check-circle"></i> الميزانية متوازنة</p>' : 
@@ -329,6 +366,8 @@ function generateBalanceSheet() {
 function generateTrialBalance() {
     const accounts = getData('accounts') || [];
     const detailAccounts = accounts.filter(acc => acc.type === 'detail');
+    const filter = getGlobalCurrencyFilter();
+    const displayCurrency = (filter === 'all') ? null : filter;
     
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -366,8 +405,8 @@ function generateTrialBalance() {
                                 <tr>
                                     <td>${acc.code}</td>
                                     <td>${acc.name}</td>
-                                    <td>${balance >= 0 ? formatCurrency(balance) : '-'}</td>
-                                    <td>${balance < 0 ? formatCurrency(Math.abs(balance)) : '-'}</td>
+                                    <td>${balance >= 0 ? formatCurrency(balance, displayCurrency) : '-'}</td>
+                                    <td>${balance < 0 ? formatCurrency(Math.abs(balance), displayCurrency) : '-'}</td>
                                 </tr>
                             `;
                         }).join('')}
@@ -376,11 +415,11 @@ function generateTrialBalance() {
                             <td>${formatCurrency(detailAccounts.reduce((sum, acc) => {
                                 const bal = getAccountBalance(acc.id);
                                 return sum + (bal >= 0 ? bal : 0);
-                            }, 0))}</td>
+                            }, 0), displayCurrency)}</td>
                             <td>${formatCurrency(detailAccounts.reduce((sum, acc) => {
                                 const bal = getAccountBalance(acc.id);
                                 return sum + (bal < 0 ? Math.abs(bal) : 0);
-                            }, 0))}</td>
+                            }, 0), displayCurrency)}</td>
                         </tr>
                     </tbody>
                 </table>

@@ -13,7 +13,7 @@ let exchangeRates = {
     USD: 250          // 1 دولار = 250 ريال يمني
 };
 
-// العملة الافتراضية
+// العملة الافتراضية - الريال اليمني
 let defaultCurrency = 'YER';
 
 // تحميل إعدادات العملات
@@ -93,7 +93,8 @@ function formatCurrency(amount, currencyCode = null) {
     if (!currency) return amount.toString();
     
     const value = parseFloat(amount) || 0;
-    const formatted = value.toLocaleString('ar-EG', {
+    const formatted = value.toLocaleString('en-US', {
+        useGrouping: false,
         minimumFractionDigits: currency.decimals,
         maximumFractionDigits: currency.decimals
     });

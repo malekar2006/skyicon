@@ -177,7 +177,9 @@ function renderAccountsTree() {
     accounts.forEach(account => {
         const level = account.code.length;
         const indent = '&nbsp;'.repeat((level - 1) * 4);
-        const balance = getAccountBalance(account.id);
+        // تمرير عملة الحساب لحساب الرصيد بالعملة الصحيحة
+        const accountCurrency = account.currency || 'YER';
+        const balance = getAccountBalance(account.id, accountCurrency);
         const isDebit = balance >= 0;
         
         const typeLabels = {
@@ -200,12 +202,12 @@ function renderAccountsTree() {
                     </span>
                 </td>
                 <td>
-                    ${renderCurrencyBadge(account.currency || 'YER')}
+                    ${renderCurrencyBadge(accountCurrency)}
                 </td>
-                <td>${isDebit ? formatCurrency(Math.abs(balance), account.currency) : '-'}</td>
-                <td>${!isDebit ? formatCurrency(Math.abs(balance), account.currency) : '-'}</td>
+                <td>${isDebit ? formatCurrency(Math.abs(balance), accountCurrency) : '-'}</td>
+                <td>${!isDebit ? formatCurrency(Math.abs(balance), accountCurrency) : '-'}</td>
                 <td style="font-weight: bold; color: ${balance >= 0 ? '#4caf50' : '#f44336'};">
-                    ${formatCurrency(Math.abs(balance), account.currency)}
+                    ${formatCurrency(Math.abs(balance), accountCurrency)}
                 </td>
                 <td>
                     <div class="action-btns">
@@ -392,7 +394,8 @@ function viewAccountStatementOld(accountId) {
                     number: entry.number,
                     description: entry.description,
                     debit: item.debit || 0,
-                    credit: item.credit || 0
+                    credit: item.credit || 0,
+                    currency: entry.currency || 'YER'
                 });
             }
         });
@@ -447,10 +450,10 @@ function viewAccountStatementOld(accountId) {
                     <td>${formatDateShort(entry.date)}</td>
                     <td>${entry.number}</td>
                     <td>${entry.description}</td>
-                    <td>${entry.debit > 0 ? formatCurrency(entry.debit) : '-'}</td>
-                    <td>${entry.credit > 0 ? formatCurrency(entry.credit) : '-'}</td>
+                    <td>${entry.debit > 0 ? formatCurrency(entry.debit, entry.currency) : '-'}</td>
+                    <td>${entry.credit > 0 ? formatCurrency(entry.credit, entry.currency) : '-'}</td>
                     <td style="font-weight: bold; color: ${balance >= 0 ? '#4caf50' : '#f44336'};">
-                        ${formatCurrency(Math.abs(balance))} ${balance >= 0 ? 'مدين' : 'دائن'}
+                        ${formatCurrency(Math.abs(balance), account.currency || 'YER')} ${balance >= 0 ? 'مدين' : 'دائن'}
                     </td>
                 </tr>
             `;
@@ -459,10 +462,10 @@ function viewAccountStatementOld(accountId) {
         html += `
             <tr style="background: var(--light-bg); font-weight: bold;">
                 <td colspan="3">المجموع</td>
-                <td>${formatCurrency(accountEntries.reduce((sum, e) => sum + e.debit, 0))}</td>
-                <td>${formatCurrency(accountEntries.reduce((sum, e) => sum + e.credit, 0))}</td>
+                <td>${formatCurrency(accountEntries.reduce((sum, e) => sum + e.debit, 0), account.currency || 'YER')}</td>
+                <td>${formatCurrency(accountEntries.reduce((sum, e) => sum + e.credit, 0), account.currency || 'YER')}</td>
                 <td style="color: ${balance >= 0 ? '#4caf50' : '#f44336'};">
-                    ${formatCurrency(Math.abs(balance))} ${balance >= 0 ? 'مدين' : 'دائن'}
+                    ${formatCurrency(Math.abs(balance), account.currency || 'YER')} ${balance >= 0 ? 'مدين' : 'دائن'}
                 </td>
             </tr>
         `;
