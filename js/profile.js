@@ -49,11 +49,6 @@ function saveCurrentUser() {
 
 // عرض صفحة الملف الشخصي
 function showProfile() {
-    // التأكد من تحميل بيانات المستخدم أولاً
-    if (!currentUser) {
-        loadCurrentUser();
-    }
-    
     loadModulePage();
     const mainContent = document.getElementById('mainContent');
     mainContent.innerHTML = `

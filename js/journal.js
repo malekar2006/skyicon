@@ -37,8 +37,8 @@ function loadJournal() {
                                 <td>${entry.number}</td>
                                 <td>${formatDateShort(entry.date)}</td>
                                 <td>${entry.description}</td>
-                                <td><span class="badge bg-info">${CURRENCIES[entry.currency || 'YER'].name}</span></td>
-                                <td>${formatCurrency(entry.total, entry.currency)}</td>
+                                <td><span class="badge bg-info">${entry.currency || 'YER'}</span></td>
+                                <td>${formatCurrency(entry.total)}</td>
                                 <td>
                                     <div class="action-btns">
                                         <button class="btn btn-sm btn-view" onclick="viewJournalEntry('${entry.id}')" title="عرض">
@@ -79,7 +79,9 @@ function loadJournal() {
                             <div class="form-group">
                                 <label class="form-label">العملة *</label>
                                 <select class="form-control" id="journalCurrency" required onchange="updateJournalCurrencyDisplay()">
-                                    ${getCurrencyOptions()}
+                                    <option value="YER">ريال يمني</option>
+                                    <option value="SAR">ريال سعودي</option>
+                                    <option value="USD">دولار أمريكي</option>
                                 </select>
                             </div>
                         </div>
@@ -112,15 +114,15 @@ function loadJournal() {
                         <div style="margin-top: 20px; padding: 15px; background: var(--light-bg); border-radius: 6px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                                 <strong>إجمالي المدين:</strong>
-                                <span id="totalDebit">0.00 ر.ي</span>
+                                <span id="totalDebit">0.00 ريال</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                                 <strong>إجمالي الدائن:</strong>
-                                <span id="totalCredit">0.00 ر.ي</span>
+                                <span id="totalCredit">0.00 ريال</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: bold;">
                                 <strong>الفرق:</strong>
-                                <span id="difference" style="color: var(--success-color);">0.00 ر.ي</span>
+                                <span id="difference" style="color: var(--success-color);">0.00 ريال</span>
                             </div>
                         </div>
                     </form>
@@ -195,18 +197,13 @@ function calculateJournalTotal() {
         totalCredit += parseFloat(input.value) || 0;
     });
     
-    // الحصول على العملة المختارة
-    const currencySelect = document.getElementById('journalCurrency');
-    const currency = currencySelect ? currencySelect.value : 'YER';
-    const currencySymbol = CURRENCIES[currency] ? CURRENCIES[currency].symbol : 'ر.ي';
-    
-    // عرض الأرقام مع رمز العملة
-    document.getElementById('totalDebit').textContent = `${totalDebit.toFixed(2)} ${currencySymbol}`;
-    document.getElementById('totalCredit').textContent = `${totalCredit.toFixed(2)} ${currencySymbol}`;
+    // عرض الأرقام بدون رمز عملة
+    document.getElementById('totalDebit').textContent = totalDebit.toFixed(2);
+    document.getElementById('totalCredit').textContent = totalCredit.toFixed(2);
     
     const diff = Math.abs(totalDebit - totalCredit);
     const diffElem = document.getElementById('difference');
-    diffElem.textContent = `${diff.toFixed(2)} ${currencySymbol}`;
+    diffElem.textContent = diff.toFixed(2);
     diffElem.style.color = diff === 0 ? 'var(--success-color)' : 'var(--danger-color)';
 }
 
@@ -320,15 +317,15 @@ function viewJournalEntry(entryId) {
                             return `
                                 <tr>
                                     <td>${account ? `${account.code} - ${account.name}` : 'غير محدد'}</td>
-                                    <td>${item.debit > 0 ? formatCurrency(item.debit, entry.currency) : '-'}</td>
-                                    <td>${item.credit > 0 ? formatCurrency(item.credit, entry.currency) : '-'}</td>
+                                    <td>${item.debit > 0 ? formatCurrency(item.debit) : '-'}</td>
+                                    <td>${item.credit > 0 ? formatCurrency(item.credit) : '-'}</td>
                                 </tr>
                             `;
                         }).join('')}
                         <tr style="background: var(--light-bg); font-weight: bold;">
                             <td>المجموع</td>
-                            <td>${formatCurrency(entry.items.reduce((sum, item) => sum + item.debit, 0), entry.currency)}</td>
-                            <td>${formatCurrency(entry.items.reduce((sum, item) => sum + item.credit, 0), entry.currency)}</td>
+                            <td>${formatCurrency(entry.items.reduce((sum, item) => sum + item.debit, 0))}</td>
+                            <td>${formatCurrency(entry.items.reduce((sum, item) => sum + item.credit, 0))}</td>
                         </tr>
                     </tbody>
                 </table>
