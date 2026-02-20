@@ -188,11 +188,19 @@ function handleLogin(event) {
 function authenticateUser(username, password) {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     
-    // في النظام الحقيقي، يجب تشفير كلمة المرور
-    // هنا نستخدم كلمة مرور افتراضية للتجربة: 123456
+    // البحث عن المستخدم
     const user = users.find(u => u.username === username);
     
-    if (user && password === '123456') {
+    if (!user) {
+        return null;
+    }
+    
+    // التحقق من كلمة المرور
+    // إذا كان المستخدم لديه كلمة مرور محفوظة، استخدمها
+    // وإلا استخدم كلمة المرور الافتراضية
+    const userPassword = user.password || 'admin123';
+    
+    if (password === userPassword) {
         // كلمة المرور صحيحة
         return user;
     }

@@ -96,6 +96,7 @@ function loadUsers() {
             {
                 id: 'user_001',
                 username: 'admin',
+                password: 'admin123',
                 fullName: 'مدير النظام',
                 email: 'admin@skyicon.com',
                 phone: '+967 777 180 875',
@@ -109,6 +110,7 @@ function loadUsers() {
             {
                 id: 'user_002',
                 username: 'accountant',
+                password: 'admin123',
                 fullName: 'أحمد محمد',
                 email: 'accountant@skyicon.com',
                 phone: '+967 777 111 222',
@@ -122,6 +124,7 @@ function loadUsers() {
             {
                 id: 'user_003',
                 username: 'employee',
+                password: 'admin123',
                 fullName: 'فاطمة علي',
                 email: 'employee@skyicon.com',
                 phone: '+967 777 333 444',
