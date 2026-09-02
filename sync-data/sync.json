@@ -1,10 +1,12 @@
 {
+    "journal_entries":  [
+
+                        ],
+    "ts":  1700000000001,
     "customers":  [
                       {
-                          "_deleted":  false,
-                          "name":  "TestCustomer",
-                          "id":  "c1"
+                          "id":  "c1",
+                          "name":  "UpdatedTest"
                       }
-                  ],
-    "ts":  1700000000000
+                  ]
 }
