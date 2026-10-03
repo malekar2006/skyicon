@@ -1,1 +1,1 @@
-{"data":[{"id":"test_settings","value":"repo-perkey-test","_sync":{"updatedAt":1790546532927}}],"ts":1790994597747}
+{"data":[{"id":"test_settings","value":"repo-perkey-test","_sync":{"updatedAt":1790546532927},"_deleted":true,"_deletedAt":1791026287044,"_deleted_reason":"سجل اختبار/حقن من جلسات تصحيح سابقة — صفر مراجع حيّة","_audit":{"ts":1791026287044,"action":"cleanup-test-record","by":"codex-audit-2026-10-03","previous":{"id":"test_settings","value":"repo-perkey-test","_sync":{"updatedAt":1790546532927}}}}],"ts":1791026496300}
