@@ -1,6 +1,6 @@
 {
  "data": {
-  "invoices|INV|2026": 2946,
+  "invoices|INV|2026": 1324,
   "invoices|PAY|2026": 1,
   "invoices|RCV|2026": 1,
   "invoices|JE|2026": 1,
@@ -14,6 +14,5 @@
   "journal_entries|JE|2026": 4666,
   "vouchers|PAY|2026": 840
  },
- "ts": 1791237297349,
- "invoices|INV|2026": 1324
+ "ts": 1791282754772
 }
